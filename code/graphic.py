@@ -7,8 +7,9 @@ class box(gui.Tk):
     
     def __init__(self):
         #op = operators()
-        self.time=0
         self.op=-1
+        self.first=''
+        self.second=''
         super().__init__()
         self.title("Calculator")
         self.frame=ttk.Frame(self).grid()
@@ -21,7 +22,7 @@ class box(gui.Tk):
     def buttons(self):
         #printing numbers
 
-        self.clc=ttk.Button(text="C",command=lambda:self.getdata(7))
+        self.clc=ttk.Button(text="C",command=lambda:self.clearing())
         self.clc.grid(row=1,column=0)
 
         self.div=ttk.Button(text="/",command=lambda:self.operate('div'))
@@ -42,7 +43,7 @@ class box(gui.Tk):
         self.nine=ttk.Button(text="9",command=lambda:self.getdata(9))
         self.nine.grid(row=2,column=2)
 
-        self.sub=ttk.Button(text="-",command=lambda:self.operate('sub'))
+        self.sub=ttk.Button(text="-",command=lambda:self.operate('-'))
         self.sub.grid(row=2,column=3)
 
         self.four=ttk.Button(text="4",command=lambda:self.getdata(4))
@@ -54,7 +55,7 @@ class box(gui.Tk):
         self.six=ttk.Button(text="6",command=lambda:self.getdata(6))
         self.six.grid(row=3,column=2)
 
-        self.add=ttk.Button(text="+",command=lambda:self.operate('add'))
+        self.add=ttk.Button(text="+",command=lambda:self.operate('+'))
         self.add.grid(row=3,column=3)
 
         self.one=ttk.Button(text="1",command=lambda:self.getdata(1))
@@ -66,8 +67,11 @@ class box(gui.Tk):
         self.three=ttk.Button(text="3",command=lambda:self.getdata(3))
         self.three.grid(row=4,column=2)
 
-        self.equal=ttk.Button(text="=",command=lambda:self.getdata(3))
-        self.equal.grid(row=4,column=3,rowspan=2,ipady=15)
+        self.pow=ttk.Button(text="^",command=lambda:self.operate('pow'))
+        self.pow.grid(row=4,column=3)
+
+        self.equal=ttk.Button(text="=",command=lambda:self.operate('='))
+        self.equal.grid(row=5,column=3,rowspan=2,ipady=15)
 
         self.mod=ttk.Button(text="%",command=lambda:self.operate('mod'))
         self.mod.grid(row=5,column=0)
@@ -78,28 +82,62 @@ class box(gui.Tk):
         self.deci=ttk.Button(text=".",command=lambda:self.getdata('.'))
         self.deci.grid(row=5,column=2)
 
+        self.sine=ttk.Button(text="sin",command=lambda:self.operate('sin'))
+        self.sine.grid(row=6,column=0)
+
+        self.cos=ttk.Button(text="cos",command=lambda:self.operate('cos'))
+        self.cos.grid(row=6,column=1)
+
+        self.tan=ttk.Button(text="tan",command=lambda:self.operate('tan'))
+        self.tan.grid(row=6,column=2)
+
+    def clearing(self):
+        self.display.delete(0,gui.END)
+        self.first=0
+        self.second=0
+        self.op=-1
 
     def getdata(self,x):
         if x =='op':
             pass
-
-
-        self.time=self.time+1
-        first=self.display.get()
-        if first==' ' or first=='0':
-            first=''
-        first=str(first)+str(x)
-        self.display.delete(0,self.time)
-        self.display.insert(0,first)
+        self.text=self.display.get()
+        if self.text==' ' or self.text=='0':
+            self.text=''
+        self.text=str(self.text)+str(x)
+        self.display.delete(0,gui.END)
+        self.display.insert(0,self.text)
 
 
 
     def operate(self,y):
-        #add code for operators
-        self.getdata(y)
+
+        if self.op == -1:
+            try :
+                self.first=float(self.text)
+            except ValueError:
+                return
+            self.func=y
+            self.op=0
+
+        if y=='=' and self.op == 0:
+            try:
+                self.second=float(self.text)
+                print(self.second)
+            except ValueError:
+                print("error")
+                return
+            self.op=1
+            if self.func=='+':
+                self.ans=calc.add(self.first,self.second)
+            if self.func=='-':
+                self.ans=calc.sub(self.first,self.second)
+            self.display.delete(0,gui.END)
+            self.display.insert(0,self.ans)
+            
 
     def run(self):
         self.mainloop()
     
 app=box()
+calc=operators()
 app.run()
