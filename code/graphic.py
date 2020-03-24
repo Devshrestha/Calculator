@@ -10,6 +10,8 @@ class box(gui.Tk):
         self.op=-1
         self.b=''
         self.a=''
+        self.first=''
+        self.second=''
         super().__init__()
         self.title("Calculator")
         self.frame=ttk.Frame(self).grid()
@@ -31,7 +33,7 @@ class box(gui.Tk):
         self.mul=ttk.Button(text="X",command=lambda:self.operate('x'))
         self.mul.grid(row=1,column=2)
 
-        self.back=ttk.Button(text="<-",command=lambda:self.getdata(7))
+        self.back=ttk.Button(text="<-",command=lambda:self.backspace())
         self.back.grid(row=1,column=3)
 
         self.seven=ttk.Button(text="7",command=lambda:self.getdata(7))
@@ -96,9 +98,25 @@ class box(gui.Tk):
         self.first=''
         self.second=''
         self.op=-1
+        self.x=''
+    
+    def backspace(self):
+        if self.op == -1:
+            return
+        if self.op == 0:
+            self.first=str(self.first)
+            self.first=self.first[:-1]
+            self.display.delete(0,gui.END)
+            check=type(self.first)
+            if check==int:
+                self.first=int(self.first)
+            self.display.insert(0,self.first)
+
 
     def calc(self,a,b,p):
-        avi=['+','-',"/",'x','%']
+        a=float(a)
+        b=float(b)
+        avi=['+','-',"/",'x','%','^']#,'sin','cos','tan']
         if p in avi:
             if p=='+':
                 self.ans=comp.add(a,b)
@@ -110,10 +128,14 @@ class box(gui.Tk):
                 self.ans=comp.div(a,b)
             if p=='%':
                 self.ans=comp.mod(a,b)
-
+            if p=='^':
+                self.ans=comp.power(a,b)
             
+            check = type(self.ans)
+            if check == int:
+                self.ans=int(self.ans)
             self.first=self.ans
-            self.second =None
+            self.second =''
             self.action=""
             self.op=3
             self.display.delete(0,gui.END)
@@ -121,10 +143,11 @@ class box(gui.Tk):
     
     def getdata(self,x):
         if self.op == 3 and self.action =='':
-            self.first=None
+            self.first=''
             self.display.delete(0,gui.END)
             self.display.insert(0,self.first)
             self.op=-1
+
         if x=="=":
             if self.op==-1 or self.op == 0 or self.op == 1:
                 return
@@ -132,34 +155,44 @@ class box(gui.Tk):
                 self.calc(self.first,self.second,self.action)
 
         if (self.op==-1 or self.op==0) and x !='=':
-            self.a+=str(x)
-            self.display.delete(0,gui.END)
-            check=type(self.a)
-            if check==int:
-                self.a=int(self.a)
-            self.display.insert(0,self.a)
+            #self.a+=str(x)
+            #self.display.delete(0,gui.END)
+            #check=type(self.a)
+            #if check==int:
+            #    self.a=int(self.a)
+            #self.display.insert(0,self.a)
             try:
-                self.first=float(self.a)
+                #self.first=float(self.a)
+                self.first+=str(x)
                 check=type(self.first)
                 if check==int:
                     self.first=int(self.first)
+                self.display.delete(0,gui.END)
+                self.display.insert(0,self.first)
 
                 if self.first != 0:
                     self.op = 0
             except ValueError:
+                print('first error')
                 return
         if (self.op==1 or self.op == 2 )and x != '=':
-            self.b+=str(x)
-            self.display.delete(0,gui.END)
-            self.display.insert(0,str(self.a)+self.action+str(self.b))
+            #self.b+=str(x)
+            #self.display.delete(0,gui.END)
+            #self.display.insert(0,str(self.a)+self.action+str(self.b))
             try:
-                self.second=float(self.b)
+                #self.second=float(self.b)
+                self.second+=str(x)
                 check=type(self.second)
                 if check==int:
                     self.second=int(self.second)
+
+                self.display.delete(0,gui.END)
+                self.display.insert(0,str(self.first)+self.action+str(self.second))
+
                 if self.second != 0:
                     self.op = 2
             except ValueError:
+                print('second error')
                 return
 
     def operate(self,y):

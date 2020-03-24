@@ -1,7 +1,2 @@
-a= 10 
-ftype= type(a)
-print(ftype)
-if ftype==int:
-    print('int')
-else:
-    print('float')
+a='6784976'
+print(a[:-1])
